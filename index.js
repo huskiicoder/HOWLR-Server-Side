@@ -51,17 +51,8 @@ app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'))
 app.get("/", (request, response) => {
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
-    response.write('<h' + 1 + ' style="color:blue">HOME</h' + long + '>'); 
+    response.write('<h' + 1 + ' style="color:blue">HOME</h' + 1 + '>'); 
     response.end(); //end the response
-//     var request = require('request');
-// request('https://ipinfo.io?token=$TOKEN', function (error, response, body) {
-//   if (!error && response.statusCode == 200) {
-//     console.log(body) // Show the HTML for the Google homepage. 
-//   }
-//   else {
-//     console.log("Error "+response.statusCode)
-//   }
-// })
 });
 
 /*
