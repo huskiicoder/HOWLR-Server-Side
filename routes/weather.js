@@ -1,5 +1,6 @@
 const API_KEY = process.env.WEATHER_API_KEY
 
+const { response } = require('express')
 //express is the framework we're going to use to handle requests
 const express = require('express')
 
@@ -24,16 +25,9 @@ router.get("/current", (req, res) => {
 
     // for info on use of tilde (`) making a String literal, see below. 
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-    let url = `https://api.weatherbit.io/v2.0/current?lat=&lon=&key=${API_KEY}&include=minutely`
-    
-    //find the query string (parameters) sent to this end point and pass them on to
-    // phish.net api call 
-    let n = req.originalUrl.indexOf('?') + 1
-    if(n > 0) {
-        url += '&' + req.originalUrl.substring(n)
-    }
+    let url = `https://api.weatherbit.io/v2.0/current?city=Tacoma,WA&key=${API_KEY}&include=minutely`
 
-    //When this web service gets a request, make a request to the Phish Web service
+    //When this web service gets a request, make a request to the Weather Web service
     request(url, function (error, response, body) {
         if (error) {
             res.send(error)

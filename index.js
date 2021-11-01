@@ -22,12 +22,6 @@ app.use(express.json())
  */
 app.use(middleware.jsonErrorInBody)
 
-app.use('/hello', require('./routes/hello.js'))
-
-app.use('/params', require('./routes/params.js'))
-
-app.use('/demosql', require('./routes/demosql.js'))
-
 app.use('/auth', require('./routes/signin.js'))
 
 app.use('/auth', require('./routes/register.js'))
@@ -42,6 +36,12 @@ app.get("/wait", (request, response) => {
 
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'))
 
+app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
+
+app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
+
+app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'))
+
 /*
  * Return HTML for the / end point. 
  * This is a nice location to document your web service API
@@ -49,14 +49,19 @@ app.use('/weather', middleware.checkToken, require('./routes/weather.js'))
  * Look up the node module 'fs' ex: require('fs');
  */
 app.get("/", (request, response) => {
-
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
-    for (i = 1; i < 7; i++) {
-        //write a response to the client
-        response.write('<h' + i + ' style="color:blue">Hello World!</h' + i + '>'); 
-    }
+    response.write('<h' + 1 + ' style="color:blue">HOME</h' + long + '>'); 
     response.end(); //end the response
+//     var request = require('request');
+// request('https://ipinfo.io?token=$TOKEN', function (error, response, body) {
+//   if (!error && response.statusCode == 200) {
+//     console.log(body) // Show the HTML for the Google homepage. 
+//   }
+//   else {
+//     console.log("Error "+response.statusCode)
+//   }
+// })
 });
 
 /*

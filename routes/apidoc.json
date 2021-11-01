@@ -1,15 +1,14 @@
 {
-    "name": "TCSS 450 Lab Web Service",
+    "name": "Howlr",
     "version": "0.1.0",
     "description": "The TCSS 450 Lab Web Service API Documentation",
     "title": "Lab API Doc",
     "url" : "https://howlr-server-side.herokuapp.com/",
     "order": [
-      "Hello",
-      "Params",
-      "Wait",
-      "DemoSql",
       "Auth",
-      "Phish"
+      "Weather",
+      "Chats",
+      "Messages",
+      "Contacts"
     ]
   }
