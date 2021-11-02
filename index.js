@@ -3,12 +3,6 @@ const express = require('express')
 //Create a new instance of express
 const app = express()
 
-// const validation = require('./utilities').validation
-// let isStringProvided = validation.isStringProvided
-
-// //Access the connection to Heroku Database
-// const pool = require('./utilities').pool
-
 let middleware = require('./middleware')
 
 /*
