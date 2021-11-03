@@ -31,7 +31,7 @@ let isStringProvided = validation.isStringProvided
  * 
  * @apiUse JSONError
  */ 
- router.post("/", (request, response) => {
+ router.post("/", (request, response, next) => {
     if (!isStringProvided(request.body.memberIdA) && !isStringProvided(request.body.memberIdA)) {
         response.status(400).send({
             message: "Missing required information"
@@ -58,7 +58,8 @@ let isStringProvided = validation.isStringProvided
                 message: "SQL Error on member in chat check",
                 error: error
             })
-}), (request, response, next) => {
+})
+}, (request, response, next) => {
     //validate memberid B exists in the chat
     let query = 'SELECT * FROM Members WHERE MemberId=$1'
     let values = [request.decoded.memberIdB]
@@ -76,7 +77,9 @@ let isStringProvided = validation.isStringProvided
             response.status(400).send({
                 message: "SQL Error on member in chat check",
                 error: error
-}), (request, response) => {
+        })
+})
+}, (request, response) => {
     const theQuery = "INSERT INTO CONTACTS(MemberID_A, MemberID_B) VALUES ($1, $2) RETURNING *"
     const values = [request.body.memberIdA, request.body.memberIdB]
 
@@ -92,7 +95,8 @@ let isStringProvided = validation.isStringProvided
                 message: "SQL Error",
                 error: err
             })    
-})
+        })
+},
 
 /**
  * @api {get} /contacts/:primaryKey? Request to get the contact in a contact list
@@ -150,7 +154,7 @@ let isStringProvided = validation.isStringProvided
                 error: error
             })
         })
-});
+}))
 
 /**
  * @api {delete} /contacts/:primaryKey?/ Request delete a contact from a contact list
