@@ -78,7 +78,8 @@ router.post('/', (request, response) => {
                     success: true,
                     email: result.rows[0].email
                 })
-                sendEmail("our.email@lab.com", email, "Welcome to our App!", "Please verify your Email account.")
+                // this goes to email.js to send the confirmation email
+                sendEmail("WelcomeToHowlr@gmail.com", email, "Welcome to Howlr!", "Please verify your Email account.")
             })
             .catch((error) => {
                 //log the error
@@ -92,6 +93,7 @@ router.post('/', (request, response) => {
                         message: "Email exists"
                     })
                 } else {
+                    console.log('register')
                     response.status(400).send({
                         message: "other error, see detail",
                         detail: error.detail

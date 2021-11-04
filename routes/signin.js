@@ -71,7 +71,7 @@ router.get('/', (request, response, next) => {
         })
     }
 }, (request, response) => {
-    const theQuery = "SELECT Password, Salt, MemberId FROM Members WHERE Email=$1"
+    const theQuery = "SELECT Password, Salt, MemberId, verification FROM Members WHERE Email=$1"
     const values = [request.auth.email]
     pool.query(theQuery, values)
         .then(result => { 
@@ -81,6 +81,17 @@ router.get('/', (request, response, next) => {
                 })
                 return
             }
+
+            // EMAIL VERIFICATION STUFF STARTS HERE
+            let verification = result.rows[0].verification
+            if(verification != 1) {
+                response.status(400).send({
+                    message: 'Email has not been verified yet!' 
+                })
+            }
+            // ENDS HERE, I'M PRETTY SURE THIS PART SHOULD WORK
+
+
 
             //Retrieve the salt used to create the salted-hash provided from the DB
             let salt = result.rows[0].salt

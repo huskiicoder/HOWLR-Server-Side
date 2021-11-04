@@ -20,6 +20,8 @@ app.use('/auth', require('./routes/signin.js'))
 
 app.use('/auth', require('./routes/register.js'))
 
+app.use('/confirm', require('./routes/confirm.js'))
+
 app.get("/wait", (request, response) => {
     setTimeout(() => {
         response.send({
