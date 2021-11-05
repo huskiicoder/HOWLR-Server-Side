@@ -15,7 +15,7 @@ let isStringProvided = validation.isStringProvided
  */ 
 
 /**
- * @api {post} /contacts Request to add someone's member id to the DB
+ * @api {post} /contacts Request to add a new contact to the DB
  * @apiName PostContacts
  * @apiGroup Contacts
  * 

@@ -16,7 +16,7 @@ const request = require('request')
 var router = express.Router()
 
 /**
- * @api {get} /weather/current get the current weather
+ * @api {get} /weather/current Request the current weather
  * @apiName GetWeather
  * @apiGroup Weather
  * 
@@ -52,7 +52,7 @@ router.get("/current", (req, res) => {
 })
 
 /**
- * @api {post} /weather/current request the current weather based on zipcode
+ * @api {post} /weather/current Request the current weather based on zipcode
  * @apiName PostWeather
  * @apiGroup Weather
  * 
