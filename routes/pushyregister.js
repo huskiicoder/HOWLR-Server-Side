@@ -6,7 +6,7 @@ const pool = require('../utilities/exports').pool
 
 const router = express.Router()
 
-const middleware = require('../middleware')
+const middleware = require('../middleware/exports')
 
 /**
  * @api {put} /auth Request to insert a Pushy Token for the user
