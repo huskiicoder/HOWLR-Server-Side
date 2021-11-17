@@ -47,8 +47,25 @@ app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'))
  */
 app.get("/", (request, response) => {
     //this is a Web page so set the content-type to HTML
+    var html = `
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
+    </head>
+    <style>
+        body {background-image: url('https://cdn.discordapp.com/attachments/369671073240711168/909967066063331368/howlrBG1080.png');
+                                          background-repeat: no-repeat;
+                                          background-attachment: fixed;
+                                          background-size: cover;}
+    </style>
+    <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://cdn.discordapp.com/attachments/369671073240711168/909994235233730601/sadhowlrLogo.png" width="307" height="309" /></p>
+    <h1 style="text-align: center;">*Sad Husky Noises*</h1>
+    <h2 style="text-align: center;">You must not be on mobile, open the app on your phone to continue to use HOWLR.</h2>
+    </body>
+    `
     response.writeHead(200, {'Content-Type': 'text/html'});
-    response.write('<h' + 1 + ' style="color:blue">HOME</h' + 1 + '>'); 
+    response.write(html); 
     response.end(); //end the response
 });
 
