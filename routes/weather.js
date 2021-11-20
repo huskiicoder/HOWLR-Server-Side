@@ -31,9 +31,12 @@ router.get("/current", (req, res) => {
 
     getPostalUrl(`https://ipinfo.io/json?token=${IP_TOKEN}`, (err, value) => {
         if (err) return console.error(err);
+        // console.log(value)
          // for info on use of tilde (`) making a String literal, see below. 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-        let url = `https://api.weatherbit.io/v2.0/current?postal_code=${value}&key=${API_KEY}&include=minutely`
+        // let url = `https://api.weatherbit.io/v2.0/current?postal_code=${value}&key=${API_KEY}&include=minutely`
+
+        let url = `https://api.weatherbit.io/v2.0/current?lat=${value[0]}&lon=${value[1]}&key=${API_KEY}&include=minutely`
 
         // let url = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${value}&key=${API_KEY}&days=10`
         //When this web service gets a request, make a request to the Weather Web service
@@ -103,7 +106,7 @@ router.get("/current", (req, res) => {
         if (err) return console.error(err);
          // for info on use of tilde (`) making a String literal, see below. 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-        let url = `https://api.weatherbit.io/v2.0/forecast/hourly?postal_code=${value}&key=${API_KEY}&hours=24`
+        let url = `https://api.weatherbit.io/v2.0/forecast/hourly?lat=${value[0]}&lon=${value[1]}&key=${API_KEY}&hours=24`
 
         //When this web service gets a request, make a request to the Weather Web service
         request(url, function (error, response, body) {
@@ -173,7 +176,7 @@ router.get("/current", (req, res) => {
          // for info on use of tilde (`) making a String literal, see below. 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 
-        let url = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${value}&key=${API_KEY}&days=10`
+        let url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${value[0]}&lon=${value[1]}&key=${API_KEY}&days=10`
         //When this web service gets a request, make a request to the Weather Web service
         request(url, function (error, response, body) {
             if (error) {
