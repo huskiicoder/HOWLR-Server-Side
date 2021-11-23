@@ -119,6 +119,7 @@ router.get('/', (request, response, next) => {
                 response.json({
                     success: true,
                     message: 'Authentication successful!',
+                    memberid:result.rows[0].memberid,
                     token: token
                 })
             } else {
