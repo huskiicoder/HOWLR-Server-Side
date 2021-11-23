@@ -254,8 +254,6 @@ router.get("/:memberId", (request, response, next) => {
                     firstName: result.firstName,
                     message: result.message,
                     timestamp: result.timestamp
-                    rowCount : result.rowCount,
-                    rows: result.rows
                 })
             }).catch(err => {
                 response.status(400).send({
