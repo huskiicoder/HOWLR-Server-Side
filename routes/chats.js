@@ -241,19 +241,23 @@ router.get("/:memberId", (request, response, next) => {
         })
     }, (request, response) => {
         //Retrieve the chats
-        let query = `SELECT M1.chatid, MEMBERS.firstname, M1.message, M1.timestamp
-                        FROM MESSAGES M1 JOIN (SELECT chatid, max(primarykey) 
-                        as lastMessages FROM MESSAGES GROUP BY chatid) M2 ON
-                        M1.chatid = M2.chatid and m1.primarykey = m2.lastMessages
-                        JOIN MEMBERS ON M1.memberid = MEMBERS.memberid`
+        let query = `SELECT MESSAGES.chatid, MEMBERS.firstname, MESSAGES.message, MESSAGES.timestamp
+                        FROM MESSAGES JOIN (SELECT chatid, max(primarykey) 
+                        as lastMessages FROM MESSAGES GROUP BY chatid) AS M2 ON
+                        MESSAGES.chatid = M2.chatid and MESSAGES.primarykey = m2.lastMessages
+                        JOIN MEMBERS ON MESSAGES.memberid = MEMBERS.memberid
+                        WHERE MessageS.memberid = $1`
+        // let query = `SELECT * FROM MESSAGES WHERE memberid = $1`
         let values = [request.params.memberId]
         pool.query(query, values)
             .then(result => {
                 response.send({
-                    chatID: result.chatID,
-                    firstName: result.firstName,
-                    message: result.message,
-                    timestamp: result.timestamp
+                    rowCount: result.rowCount,
+                    rows: result.rows
+                    // chatID: result.chatID,
+                    // firstName: result.firstName,
+                    // message: result.message,
+                    // timestamp: result.timestamp
                 })
             }).catch(err => {
                 response.status(400).send({
