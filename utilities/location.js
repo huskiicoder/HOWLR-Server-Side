@@ -13,7 +13,8 @@ let getPostalUrl= (url, cb) => {
         resp.on('end', () => {
         value = JSON.parse(data)
 
-        cb(null, value.postal);
+        // cb(null, value.postal);
+        cb(null, value.loc);
         });
     }).on('error', (err) => {
         cb(err);
