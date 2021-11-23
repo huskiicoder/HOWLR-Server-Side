@@ -206,29 +206,29 @@ console.log(request.decoded)
  * 
  * @apiUse JSONError
  */ 
-router.get("/:chatId", (request, response, next) => {
+router.get("/:memberId", (request, response, next) => {
     //validate on missing or invalid (type) parameters
-    if (!request.params.chatId) {
+    if (!request.params.memberId) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.params.chatId)) {
+    } else if (isNaN(request.params.memberId)) {
         response.status(400).send({
-            message: "Malformed parameter. chatId must be a number"
+            message: "Malformed parameter. memberId must be a number"
         })
     } else {
         next()
     }
 },  (request, response, next) => {
-    //validate chat id exists
-    let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
-    let values = [request.params.chatId]
+    //validate member id exists
+    let query = 'SELECT * FROM Members WHERE memberId=$1'
+    let values = [request.params.memberId]
 
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
                 response.status(404).send({
-                    message: "Chat ID not found"
+                    message: "Member ID not found"
                 })
             } else {
                 next()
@@ -240,15 +240,20 @@ router.get("/:chatId", (request, response, next) => {
             })
         })
     }, (request, response) => {
-        //Retrieve the members
-        let query = `SELECT Members.Email 
-                    FROM ChatMembers
-                    INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId
-                    WHERE ChatId=$1`
-        let values = [request.params.chatId]
+        //Retrieve the chats
+        let query = `SELECT M1.chatid, MEMBERS.firstname, M1.message, M1.timestamp
+                        FROM MESSAGES M1 JOIN (SELECT chatid, max(primarykey) 
+                        as lastMessages FROM MESSAGES GROUP BY chatid) M2 ON
+                        M1.chatid = M2.chatid and m1.primarykey = m2.lastMessages
+                        JOIN MEMBERS ON M1.memberid = MEMBERS.memberid`
+        let values = [request.params.memberId]
         pool.query(query, values)
             .then(result => {
                 response.send({
+                    chatID: result.chatID,
+                    firstName: result.firstName,
+                    message: result.message,
+                    timestamp: result.timestamp
                     rowCount : result.rowCount,
                     rows: result.rows
                 })
