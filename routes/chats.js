@@ -245,8 +245,8 @@ router.get("/:memberId", (request, response, next) => {
                         FROM MESSAGES JOIN (SELECT chatid, max(primarykey) 
                         as lastMessages FROM MESSAGES GROUP BY chatid) AS M2 ON
                         MESSAGES.chatid = M2.chatid and MESSAGES.primarykey = m2.lastMessages
-                        JOIN MEMBERS ON MESSAGES.memberid = MEMBERS.memberid
-                        WHERE MessageS.memberid = $1`
+                        JOIN MEMBERS ON MESSAGES.memberid = MEMBERS.memberid WHERE MESSAGES.chatid IN
+                        (SELECT chatid FROM CHATMEMBERS WHERE memberid = $1)`
         // let query = `SELECT * FROM MESSAGES WHERE memberid = $1`
         let values = [request.params.memberId]
         pool.query(query, values)
@@ -254,10 +254,6 @@ router.get("/:memberId", (request, response, next) => {
                 response.send({
                     rowCount: result.rowCount,
                     rows: result.rows
-                    // chatID: result.chatID,
-                    // firstName: result.firstName,
-                    // message: result.message,
-                    // timestamp: result.timestamp
                 })
             }).catch(err => {
                 response.status(400).send({
