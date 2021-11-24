@@ -41,8 +41,8 @@ let isStringProvided = validation.isStringProvided
     }
 }, (request, response, next) => {
     //validate email exists AND convert it to the associated memberId
-    let query = 'SELECT MemberID FROM MEMBERS WHERE Email=$1'
-    let values = [request.params.usernameA]
+    let query = 'SELECT MemberID FROM MEMBERS WHERE usernameA=$1'
+    let values = [request.body.usernameA]
 
     pool.query(query, values)
         .then(result => {
@@ -51,7 +51,7 @@ let isStringProvided = validation.isStringProvided
                     message: "email not found"
                 })
             } else {
-                request.params.usernameA = result.rows[0].memberid
+                request.body.usernameA = result.rows[0].memberid
                 next()
             }
         }).catch(error => {
@@ -63,7 +63,7 @@ let isStringProvided = validation.isStringProvided
 },(request, response, next) => {
     //validate email exists AND convert it to the associated memberId
     let query = 'SELECT MemberID FROM MEMBERS WHERE Email=$1'
-    let values = [request.params.usernameB]
+    let values = [request.body.usernameB]
 
     pool.query(query, values)
         .then(result => {
@@ -72,7 +72,7 @@ let isStringProvided = validation.isStringProvided
                     message: "email not found"
                 })
             } else {
-                request.params.usernameB = result.rows[0].memberid
+                request.body.usernameB = result.rows[0].memberid
                 next()
             }
         }).catch(error => {
@@ -154,7 +154,8 @@ router.get("/:email", (request, response, next) => {
         let query = `SELECT Members.MemberID, Members.Username, Members.Lastname, Members.Firstname 
                     FROM Members
                     INNER JOIN Contacts ON Members.MemberId=Contacts.MemberId_B
-                    WHERE Contacts.MemberId_A=(Select MemberID from Members where email=$1) 
+                    WHERE Contacts.MemberId_A=(Select MemberID from Members where email=$1)
+                    OR Contacts.MemberId_B=(Select MemberID from Members where email=$1)
                     and Verified=1`
         let values = [request.params.email]
         pool.query(query, values)
