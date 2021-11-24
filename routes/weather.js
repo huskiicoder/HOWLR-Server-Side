@@ -1,4 +1,5 @@
 const API_KEY = process.env.WEATHER_API_KEY
+const API_OPEN = process.env.WEATHER_API_KEY_OPEN
 const IP_TOKEN = process.env.TOKEN
 
 const { response } = require('express')
@@ -14,6 +15,37 @@ let isStringProvided = validation.isStringProvided
 const request = require('request')
 
 var router = express.Router()
+
+/**
+ * @api {get} /weather/:lat/:lon Request a list of weather
+ * @apiName GetWeather
+ * @apiGroup Weather
+ * 
+ * @apiHeader {String} authorization JWT provided from Auth get
+ * 
+ * @apiDescription This end point is a pass through to the OpenWeather API. 
+ * 
+ */ 
+ router.get("/:lat/:lon", (req, res) => {
+
+    const lat = req.params.lat;
+    const lon = req.params.lon;
+
+    let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${API_OPEN}`
+
+     request(url, function (error, response, body) {
+        if (error) {
+            res.send(error)
+        } else {
+
+            var n = body.indexOf("{")
+            var nakidBody = body.substring(n - 1)
+
+            res.send(nakidBody)
+        }
+    })
+
+})
 
 /**
  * @api {get} /weather/current Get the current weather
