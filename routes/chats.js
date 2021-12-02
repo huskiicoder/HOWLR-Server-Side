@@ -241,7 +241,7 @@ router.get("/:memberId", (request, response, next) => {
         })
     }, (request, response) => {
         //Retrieve the chats
-        let query = `SELECT MESSAGES.chatid, MEMBERS.firstname, MESSAGES.message, MESSAGES.timestamp
+        let query = `SELECT MESSAGES.chatid, MEMBERS.firstname, MEMBERS.lastname, MESSAGES.message, MESSAGES.timestamp
                         FROM MESSAGES JOIN (SELECT chatid, max(primarykey) 
                         as lastMessages FROM MESSAGES GROUP BY chatid) AS M2 ON
                         MESSAGES.chatid = M2.chatid and MESSAGES.primarykey = m2.lastMessages
