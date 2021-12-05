@@ -33,16 +33,6 @@ var router = express.Router()
                 let googleGeo = JSON.parse(body);
                 let lat = googleGeo.results[0].geometry.location.lat;
                 let lon = googleGeo.results[0].geometry.location.lng;
-                let locationInfo = googleGeo.results[0].address_components;
-                let cityName = "Unknown";
-                for (let i = 0; i < locationInfo.length; i++) {
-                    if (locationInfo[i].types.includes("locality") ||
-                        locationInfo[i].types.includes("sublocality") ||
-                        locationInfo[i].types.includes("sublocality_level_1")) {
-                        cityName = locationInfo[i].short_name;
-                        break;
-                    }
-                }
                 let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${API_OPEN}`
                 request(url, function (error, response, body) {
                     if (error) {
@@ -51,10 +41,7 @@ var router = express.Router()
                         var n = body.indexOf("{")
                         var nakidBody = body.substring(n - 1)
 
-                        res.send({
-                            city: cityName,
-                            weather: nakidBody
-                        })
+                        res.send(nakidBody)
                     }
                 })
             }
@@ -70,19 +57,6 @@ var router = express.Router()
             if (error) {
                 res.send(error);
             } else {
-                let zip = "N/A";
-                let cityName = "Unknown";
-                let locationInfo = JSON.parse(body).results[0].address_components;
-                for (let i = 0; i < locationInfo.length; i++) {
-                    if (locationInfo[i].types.includes("locality") ||
-                        locationInfo[i].types.includes("sublocality") ||
-                        locationInfo[i].types.includes("sublocality_level_1")) {
-                        cityName = locationInfo[i].short_name;
-                    }
-                    if (locationInfo[i].types.includes("postal_code")) {
-                        zip = locationInfo[i].short_name;
-                    }
-                }
                 let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${API_OPEN}`
 
                 request(url, function (error, response, body) {
@@ -93,10 +67,7 @@ var router = express.Router()
                         var n = body.indexOf("{")
                         var nakidBody = body.substring(n - 1)
 
-                        res.send({
-                            city: cityName,
-                            weather: nakidBody
-                        })
+                        res.send(nakidBody)
                     }
                 })
             }
