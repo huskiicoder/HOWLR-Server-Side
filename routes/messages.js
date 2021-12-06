@@ -122,10 +122,14 @@ router.post("/", (request, response, next) => {
         })
 }, (request, response) => {
         // send a notification of this message to ALL members with registered tokens
-        let query = `SELECT token FROM Push_Token
-                        INNER JOIN ChatMembers ON
-                        Push_Token.memberid=ChatMembers.memberid
-                        WHERE ChatMembers.chatId=$1`
+        // let query = `SELECT token FROM Push_Token
+        //                 INNER JOIN ChatMembers ON
+        //                 Push_Token.memberid=ChatMembers.memberid
+        //                 WHERE ChatMembers.chatId=$1`
+        let query = `SELECT Members.FirstName, Members.LastName, token FROM Push_Token, ChatMembers, Members 
+                     WHERE ChatMembers.chatId=$1 and  
+                     Push_Token.MemberId=ChatMembers.MemberId 
+                     and ChatMembers.MemberId=Members.MemberId`
         let values = [request.body.chatId]
         pool.query(query, values)
             .then(result => {
@@ -134,7 +138,9 @@ router.post("/", (request, response, next) => {
                 result.rows.forEach(entry => 
                     msg_functions.sendMessageToIndividual(
                         entry.token, 
-                        response.message))
+                        response.message,
+                        entry.firstname,
+                        entry.lastname))
                 response.send({
                     success:true
                 })

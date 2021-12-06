@@ -4,13 +4,15 @@ const Pushy = require('pushy');
 const pushyAPI = new Pushy(process.env.PUSHY_API_KEY);
 
 //use to send message to a specific client by the token
-function sendMessageToIndividual(token, message) {
+function sendMessageToIndividual(token, message, first, last) {
 
     //build the message for Pushy to send
     var data = {
         "type": "msg",
         "message": message,
-        "chatid": message.chatid
+        "chatid": message.chatid,
+        "firstname": first,
+        "lastname": last
     }
 
 
