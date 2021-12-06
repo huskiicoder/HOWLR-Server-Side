@@ -311,6 +311,53 @@ router.get("/search/:email/:search", (request, response, next) => {
 });
 
 /**
+ * @api {get} /contacts/name Retrieve first and last name of user
+ * @apiName GetUserFirstAndLast
+ * @apiGroup Contacts
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiParam {String} email email of the user. 
+ * 
+ * @apiSuccess {Number} rowCount the number of contacts returned
+ * @apiSuccess {Object[]} contacts first and last name of user
+ * 
+ * @apiError (404: Email Not Found) {String} message "User Not Found"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
+
+ router.get("/name/:email", (request, response, next) => {
+    if (!request.params.email) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    }
+    else {
+        next()
+    }
+},  (request, response, next) => {
+    //validate email exists AND convert it to the associated memberId
+    let query = 'SELECT firstname, lastname FROM MEMBERS WHERE email=$1'
+    let values = [request.params.email]
+    pool.query(query, values)
+        .then(result => {
+            response.send({
+                success: true,
+                rows: result.rows
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
+    });
+
+/**
  * @api {get} /contacts/searchContact/:email/:search Search an existing contact using email, firstname, lastname
  * @apiName GetUser
  * @apiGroup Contacts
