@@ -126,6 +126,10 @@ router.post("/", (request, response, next) => {
                         INNER JOIN ChatMembers ON
                         Push_Token.memberid=ChatMembers.memberid
                         WHERE ChatMembers.chatId=$1`
+//        let query = `SELECT Members.FirstName, Members.LastName, token FROM Push_Token, ChatMembers, Members
+//                    WHERE ChatMembers.chatId=$1 and
+//                    Push_Token.MemberId=ChatMembers.MemberId
+//                    and ChatMembers.MemberId=Members.MemberId`
         let values = [request.body.chatId]
         pool.query(query, values)
             .then(result => {
@@ -135,11 +139,13 @@ router.post("/", (request, response, next) => {
                     msg_functions.sendMessageToIndividual(
                         entry.token, 
                         response.message))
+                console.log("Log test 1")
                 response.send({
                     success:true
                 })
+                console.log("Log test 2")
             }).catch(err => {
-
+                console.log("Log test 3")
                 response.status(400).send({
                     message: "SQL Error on select from push token",
                     error: err
