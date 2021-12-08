@@ -135,6 +135,7 @@ router.post("/", (request, response, next) => {
             .then(result => {
                 console.log(request.decoded.email)
                 console.log(request.body.message)
+                console.log("Log test 0")
                 result.rows.forEach(entry => 
                     msg_functions.sendMessageToIndividual(
                         entry.token, 
