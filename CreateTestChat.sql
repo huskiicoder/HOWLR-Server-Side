@@ -38,6 +38,7 @@ WHERE Members.Email='justinaschenbrenner@gmail.com'
     OR Members.Email='groupscruffy@gmail.com'
     OR Members.Email='ozvznqytvfezwroiff@sdvrecft.com'
     OR Members.Email='keknjijujqdoyxbaza@nvhrw.com'
+    OR Members.Email='huskiicoder@gmail.com'
 RETURNING *;
 
 --Add the test users
@@ -49,6 +50,7 @@ WHERE Members.Email='justina3@uw.edu'
     OR Members.Email='groupscruffy@gmail.com'
     OR Members.Email='ozvznqytvfezwroiff@sdvrecft.com'
     OR Members.Email='keknjijujqdoyxbaza@nvhrw.com'
+    OR Members.Email='huskiicoder@gmail.com'
 RETURNING *;
 
 --Add the test users
@@ -60,4 +62,5 @@ WHERE Members.Email='justinaschenbrenner@gmail.com'
     OR Members.Email='groupscruffy@gmail.com'
     OR Members.Email='ozvznqytvfezwroiff@sdvrecft.com'
     OR Members.Email='keknjijujqdoyxbaza@nvhrw.com'
+    OR Members.Email='huskiicoder@gmail.com'
 RETURNING *;
