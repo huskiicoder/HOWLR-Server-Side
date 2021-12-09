@@ -42,13 +42,14 @@ router.use(bodyParser.json())
  * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
  * 
  */ 
-router.get('/', (request, response) => {
+router.post('/', (request, response) => {
     // I need to update resetCode, put that reset code in a link inside of an email
     // Make that link open a webpage interface to reset password, submit will
     // go to another endpoint and update the password w/ new one
     // var email = request.query.email
     var subject = "Reset Password"
-    sendResetEmail(request.query.email, subject);
+    console.log(request.body.email)
+    sendResetEmail(request.body.email, subject);
     response.status(201).send({
         success: true
     })
