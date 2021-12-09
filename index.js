@@ -27,7 +27,7 @@ app.get("/wait", (request, response) => {
         response.send({
             message: "Thanks for waiting"
         });
-    }, 8080)
+    }, 5000)
 })
 
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'))
@@ -85,6 +85,6 @@ app.use("/doc", express.static('apidoc'))
 * let port; = process.env.PORT;
 * if(port == null) {port = 5000} 
 */ 
-app.listen(8080, () => {
-    console.log("Server up and running on port: " + (8080));
+app.listen(process.env.PORT || 5000, () => {
+    console.log("Server up and running on port: " + (process.env.PORT || 5000));
 });
