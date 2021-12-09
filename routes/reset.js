@@ -48,7 +48,6 @@ router.post('/', (request, response) => {
     // go to another endpoint and update the password w/ new one
     // var email = request.query.email
     var subject = "Reset Password"
-    console.log(request.body.email)
     sendResetEmail(request.body.email, subject);
     response.status(201).send({
         success: true
@@ -63,25 +62,29 @@ router.get('/interface', (request, response) => {
     email = request.query.email
     let theQuery = "SELECT * FROM Members WHERE resetCode = $1"
     pool.query(theQuery, token).then(result => {
+        console.log(token)
+        console.log(email)
         //  have person fill out form with new password
         // let verificationQuery = "UPDATE MEMBERS SET verification = 1 WHERE resetCode = $1"
         let verificationQuery = "UPDATE MEMBERS SET resetCode='' WHERE resetCode = $1"
         pool.query(verificationQuery, token)
             .then(result => {
-                if (result.rowCount == 0) {
-                    response.status(404).send({
-                        message: "ACCESS DENIED PUNK"
-                    })
-                } else {
-                    next()
-                }
-            }).catch(error => {
-                response.status(400).send({
-                    message: "SQL Error",
-                    error: error
-                })
-            })
-        }, (request, response) => {
+            //     console.log("here")
+            //     next()
+            //     // if (false) {
+            //     //     response.status(404).send({
+            //     //         message: "ACCESS DENIED PUNK"
+            //     //     })
+            //     // } else {
+            //     //     next()
+            //     // }
+            // }).catch(error => {
+            //     response.status(400).send({
+            //         message: "SQL Error",
+            //         error: error
+            //     })
+            // })
+        // }, (request, response) => {
 
                 var html =
                 `
@@ -265,6 +268,7 @@ router.get('/interface', (request, response) => {
                 response.end();
             }).catch(e => console.log('error', e))
     })
+})
 
 
 router.post('/performReset', (request, response) => {
@@ -287,10 +291,31 @@ router.post('/performReset', (request, response) => {
         let values = [salted_hash, salt, email]
         pool.query(theQuery, values)
             .then(result => {
-                //We successfully added the user!
-                response.status(201).send({
-                    success: true
-                })
+                // //We successfully added the user!
+                // response.status(201).send({
+                //     success: true
+                // })
+                var html =
+                `<head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
+                 </head>
+                 <style>
+                    body {background-image: url('https://cdn.discordapp.com/attachments/369671073240711168/909967066063331368/howlrBG1080.png');
+                                          background-repeat: no-repeat;
+                                          background-attachment: fixed;
+                                          background-size: cover;}
+                 </style>
+                <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://cdn.discordapp.com/attachments/369671073240711168/909963950509150228/howlrLogo.png" width="307" height="309" /></p>
+                <h1 style="text-align: center;">Thank you for verifying your email!</h1>
+                <div class="col-md-12 text-center">
+                    <a href="http://howlr-server-side.herokuapp.com"><button type="button" class="btn btn-primary btn-lg">Continue to HOWLR</button></a>
+                </div>
+                </body>`
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.write(html);
+                response.end();
             })
             .catch((error) => {
                 //log the error
