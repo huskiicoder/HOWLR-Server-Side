@@ -114,7 +114,7 @@ let sendResetEmail = (receiver, subject) => {
                     html: `<h1>Reset Password</h1>
                     <h2>Hello ${receiver}</h2>
                     <p>You recently requested to reset your password. Click the link below to continue.</p>
-                    <a href=https://howlr-server-side.herokuapp.com/reset/interface?token=${token}&email=${receiver}>Reset Password</a>
+                    <a href=http://howlr-server-side.herokuapp.com/reset/interface?token=${token}&email=${receiver}>Reset Password</a>
                     <p>If you did not make this change or if you believe an unauthorized person has accessed your account, please
                     reset your password immediately with the "Forgot password?" button on the apps sign-in page.</p>
                     </div>`,
