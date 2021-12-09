@@ -68,7 +68,7 @@ router.get('/interface', (request, response) => {
         let verificationQuery = "UPDATE MEMBERS SET resetCode='' WHERE resetCode = $1"
         pool.query(verificationQuery, token)
             .then(result => {
-                if (result.rowCount == 0) {
+                if (false) {
                     response.status(404).send({
                         message: "ACCESS DENIED PUNK"
                     })
@@ -287,10 +287,28 @@ router.post('/performReset', (request, response) => {
         let values = [salted_hash, salt, email]
         pool.query(theQuery, values)
             .then(result => {
-                //We successfully added the user!
-                response.status(201).send({
-                    success: true
-                })
+                //We successfully updated the password
+                var html =
+                `<head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
+                 </head>
+                 <style>
+                    body {background-image: url('https://cdn.discordapp.com/attachments/369671073240711168/909967066063331368/howlrBG1080.png');
+                                          background-repeat: no-repeat;
+                                          background-attachment: fixed;
+                                          background-size: cover;}
+                 </style>
+                <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://cdn.discordapp.com/attachments/369671073240711168/909963950509150228/howlrLogo.png" width="307" height="309" /></p>
+                <h1 style="text-align: center;">Password successfully reset!</h1>
+                <div class="col-md-12 text-center">
+                    <a href="http://howlr-server-side.herokuapp.com"><button type="button" class="btn btn-primary btn-lg">Continue to HOWLR</button></a>
+                </div>
+                </body>`
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.write(html);
+                response.end();
             })
             .catch((error) => {
                 //log the error
