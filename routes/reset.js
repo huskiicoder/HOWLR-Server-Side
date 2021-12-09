@@ -42,13 +42,13 @@ router.use(bodyParser.json())
  * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
  * 
  */ 
-router.get('/', (request, response) => {
+router.post('/', (request, response) => {
     // I need to update resetCode, put that reset code in a link inside of an email
     // Make that link open a webpage interface to reset password, submit will
     // go to another endpoint and update the password w/ new one
     // var email = request.query.email
     var subject = "Reset Password"
-    sendResetEmail(request.query.email, subject);
+    sendResetEmail(request.body.email, subject);
     response.status(201).send({
         success: true
     })
@@ -62,25 +62,29 @@ router.get('/interface', (request, response) => {
     email = request.query.email
     let theQuery = "SELECT * FROM Members WHERE resetCode = $1"
     pool.query(theQuery, token).then(result => {
+        console.log(token)
+        console.log(email)
         //  have person fill out form with new password
         // let verificationQuery = "UPDATE MEMBERS SET verification = 1 WHERE resetCode = $1"
         let verificationQuery = "UPDATE MEMBERS SET resetCode='' WHERE resetCode = $1"
         pool.query(verificationQuery, token)
             .then(result => {
-                if (result.rowCount == 0) {
-                    response.status(404).send({
-                        message: "ACCESS DENIED PUNK"
-                    })
-                } else {
-                    next()
-                }
-            }).catch(error => {
-                response.status(400).send({
-                    message: "SQL Error",
-                    error: error
-                })
-            })
-        }, (request, response) => {
+            //     console.log("here")
+            //     next()
+            //     // if (false) {
+            //     //     response.status(404).send({
+            //     //         message: "ACCESS DENIED PUNK"
+            //     //     })
+            //     // } else {
+            //     //     next()
+            //     // }
+            // }).catch(error => {
+            //     response.status(400).send({
+            //         message: "SQL Error",
+            //         error: error
+            //     })
+            // })
+        // }, (request, response) => {
 
                 var html =
                 `
@@ -264,6 +268,7 @@ router.get('/interface', (request, response) => {
                 response.end();
             }).catch(e => console.log('error', e))
     })
+})
 
 
 router.post('/performReset', (request, response) => {
