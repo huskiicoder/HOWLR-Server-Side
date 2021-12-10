@@ -133,9 +133,6 @@ router.post("/", (request, response, next) => {
         let values = [request.body.chatId]
         pool.query(query, values)
             .then(result => {
-                console.log(request.decoded.email)
-                console.log(request.body.message)
-                console.log("Log test 0")
                 result.rows.forEach(entry => 
                     msg_functions.sendMessageToIndividual(
                         entry.token, 
@@ -145,9 +142,7 @@ router.post("/", (request, response, next) => {
                 response.send({
                     success:true
                 })
-                console.log("Log test 2")
             }).catch(err => {
-                console.log("Log test 3")
                 response.status(400).send({
                     message: "SQL Error on select from push token",
                     error: err
