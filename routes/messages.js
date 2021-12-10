@@ -120,12 +120,39 @@ router.post("/", (request, response, next) => {
                 error: err
             })
         })
+}, (request, response, next) => {
+    //add the message to the database
+    let insert = `Select * from Members where memberid=$1`
+    let values = [request.decoded.memberid]
+    pool.query(insert, values)
+        .then(result => {
+            if (result.rowCount == 1) {
+                //insertion success. Attach the message to the Response obj
+                response.message.firstname = result.rows[0].firstname
+                response.message.lastname = result.rows[0].lastname
+                //Pass on to next to push
+                next()
+            } else {
+                response.status(400).send({
+                    "message": "unknown error"
+                })
+            }
+
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error on insert",
+                error: err
+            })
+        })
 }, (request, response) => {
+        // OLD
         // send a notification of this message to ALL members with registered tokens
         // let query = `SELECT token FROM Push_Token
         //                 INNER JOIN ChatMembers ON
         //                 Push_Token.memberid=ChatMembers.memberid
         //                 WHERE ChatMembers.chatId=$1`
+
+        // MONDAY WAS WORKING
         let query = `SELECT Members.FirstName, Members.LastName, token FROM Push_Token, ChatMembers, Members 
                      WHERE ChatMembers.chatId=$1 and  
                      Push_Token.MemberId=ChatMembers.MemberId 
@@ -139,8 +166,8 @@ router.post("/", (request, response, next) => {
                     msg_functions.sendMessageToIndividual(
                         entry.token, 
                         response.message,
-                        entry.firstname,
-                        entry.lastname))
+                        response.message.firstname,
+                        response.message.lastname))
                 response.send({
                     success:true
                 })
@@ -223,7 +250,7 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
             request.params.messageId = 2**31 - 1
         }
 
-        let query = `SELECT Messages.PrimaryKey AS messageId, Members.firstname, Members.lastname, Messages.Message, 
+        let query = `SELECT Messages.PrimaryKey AS messageId, Members.firstname, Members.lastname, Members.email, Messages.Message, 
                     to_char(Messages.Timestamp AT TIME ZONE 'PDT', 'YYYY-MM-DD HH24:MI:SS.US' ) AS Timestamp
                     FROM Messages
                     INNER JOIN Members ON Messages.MemberId=Members.MemberId
