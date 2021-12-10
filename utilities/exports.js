@@ -12,6 +12,8 @@ const sendEmail = require('./email.js').sendEmail
 
 let messaging = require('./pushy_utilities.js')
 
+let contact = require('./pushy_utilities.js').sendContactToIndividual
+
 const getPostalUrl = require('./location.js').getPostalUrl
 
 module.exports = { 

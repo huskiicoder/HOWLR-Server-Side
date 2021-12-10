@@ -382,4 +382,54 @@ router.delete("/:chatId/:email", (request, response, next) => {
     }
 )
 
+router.post("/create", (request, response, next) => {
+    if (!isStringProvided(request.body.name) || !request.body.list) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (request, response, next) => {
+
+    let insert = `INSERT INTO Chats(Name)
+                  VALUES ($1)
+                  RETURNING ChatId`
+    let values = [request.body.name]
+    pool.query(insert, values)
+        .then(result => {
+            request.body.name = result.rows[0].chatid
+            next()
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+
+        })
+}, (request, response) => {
+    //let contactList = request.body.list
+    let chatid = request.body.name
+    let values = null;
+    let query = 'INSERT INTO ChatMembers(chatID, MemberID) Values';
+    request.body.list.forEach(element => {
+        query += '(' + request.body.name + ',' + element + '),';
+    });
+    query = query.slice(0,-1);
+    console.log(query)
+    pool.query(query,values)
+        .then(result => {
+            response.send({
+                success: true,
+                chatID:chatid
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+
+        })
+})
+
 module.exports = router
