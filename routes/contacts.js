@@ -190,6 +190,8 @@ router.get("/:email", (request, response, next) => {
                     message: "Email not found"
                 })
             } else {
+                response.message = result.rows[0]
+                // console.log(response.message)
                 next()
             }
         }).catch(error => {
@@ -200,8 +202,8 @@ router.get("/:email", (request, response, next) => {
         })
     }, (request, response) => {
         //Retrieve the members
-        let query = `SELECT Members.MemberID, Members.Username, Members.Lastname, Members.Firstname, Contacts.Verified 
-                    FROM Members
+        let query = `SELECT Members.MemberID, Members.Username, Members.Lastname, Members.Firstname, 
+                    Contacts.Verified, Contacts.MemberId_B FROM Members
                     INNER JOIN Contacts ON (Members.MemberId=Contacts.MemberId_A
                     AND Contacts.MemberId_B=(Select MemberID from Members where email=$1))
                     OR (Contacts.MemberId_A=(Select MemberID from Members where email=$1)
@@ -214,8 +216,13 @@ router.get("/:email", (request, response, next) => {
                 let contactList = [];
                 contactResult.forEach(function(contact) {
                     let verified = contact.verified;
+                    let memberid_b = contact.memberid_b;
+                    // console.log(contact)
+                    // console.log("memberid_b: " + memberid_b)
+                    // console.log("memberid: " + response.message.memberid)
                     delete contact.verified;
-                    if (verified == 0) {
+                    delete contact.memberid_b;
+                    if (verified == 0 && memberid_b === response.message.memberid) {
                         inviteList.push(contact);
                     } else {
                         contactList.push(contact);
