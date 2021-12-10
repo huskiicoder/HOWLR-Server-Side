@@ -246,4 +246,105 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
             })
 });
 
+router.post("/create", (request, response, next) => {
+    if (!isStringProvided(request.body.name) || !request.body.list) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (request, response, next) => {
+
+    let insert = `INSERT INTO Chats(Name)
+                  VALUES ($1)
+                  RETURNING ChatId`
+    let values = [request.body.name]
+    pool.query(insert, values)
+        .then(result => {
+            request.body.name = result.rows[0].chatid
+            next()
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+
+        })
+}, (request, response) => {
+    let contactList = request.body.list
+    let chatid = request.body.name
+    let values = null;
+    let query = 'INSERT INTO ChatMembers(chatID, MemberID) Values';
+    contactList.forEach(element => {
+        query += '(' + request.body.name + ',' + element + '),';
+    });
+    query = query.slice(0,-1);
+    console.log(query)
+    pool.query(query,values)
+        .then(result => {
+            response.send({
+                success: true,
+                chatID:chatid
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+
+        })
+})
+
+router.post("/add", (request, response, next) => {
+    if (!request.body.chatId || !request.body.list) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (request, response, next) => {
+    //validate that the ChatId exists
+    let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
+    let values = [request.body.chatId]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Chat ID not found"
+                })
+            } else {
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+}, (request, response) => {
+    let contactList = request.body.list
+    let values = null;
+    let query = 'INSERT INTO ChatMembers(chatID, MemberID) Values';
+    contactList.forEach(element => {
+        query += '(' + request.body.chatId + ',' + element + '),';
+    });
+    query = query.slice(0,-1);
+    console.log(query)
+    pool.query(query,values)
+        .then(result => {
+            response.send({
+                success: true
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+
+        })
+})
+
 module.exports = router
