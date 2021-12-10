@@ -30,6 +30,8 @@ app.get("/wait", (request, response) => {
     }, 5000)
 })
 
+app.use('/reset', require('./routes/reset.js'))
+
 app.use('/weather', middleware.checkToken, require('./routes/weather.js'))
 
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
