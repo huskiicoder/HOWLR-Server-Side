@@ -87,6 +87,6 @@ app.use("/doc", express.static('apidoc'))
 * let port; = process.env.PORT;
 * if(port == null) {port = 5000} 
 */ 
-app.listen(5000, () => {
-    console.log("Server up and running on port: " + (5000));
+app.listen(8080, () => {
+    console.log("Server up and running on port: " + (8080));
 });
