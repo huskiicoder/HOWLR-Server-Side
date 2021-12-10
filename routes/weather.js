@@ -1,14 +1,9 @@
-const API_KEY = process.env.WEATHER_API_KEY
 const API_OPEN = process.env.WEATHER_API_KEY_OPEN
+const API_GOOGLE = process.env.GOOGLE_API_KEY
 
 const { response } = require('express')
 //express is the framework we're going to use to handle requests
 const express = require('express')
-
-const getPostalUrl = require('../utilities').getPostalUrl
-
-const validation = require('../utilities').validation
-let isStringProvided = validation.isStringProvided
 
 //request module is needed to make a request to a web service
 const request = require('request')
@@ -16,7 +11,7 @@ const request = require('request')
 var router = express.Router()
 
 /**
- * @api {get} /weather/:lat/:lon Request a list of weather
+ * @api {get} /weather/ Request a list of weather
  * @apiName GetWeather
  * @apiGroup Weather
  * 
@@ -25,247 +20,57 @@ var router = express.Router()
  * @apiDescription This end point is a pass through to the OpenWeather API. 
  * 
  */ 
- router.get("/:lat/:lon", (req, res) => {
-
-    const lat = req.params.lat;
-    const lon = req.params.lon;
-
-    let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${API_OPEN}`
-
-     request(url, function (error, response, body) {
-        if (error) {
-            res.send(error)
-        } else {
-
-            var n = body.indexOf("{")
-            var nakidBody = body.substring(n - 1)
-
-            res.send(nakidBody)
-        }
-    })
-
-})
-
-/**
- * @api {get} /weather/current/:lat/:lon Get the current weather
- * @apiName GetWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} lat and lon
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/forcecast/daily.
- * See the <a href="https://api.weatherbit.io/v2.0/forcecast/daily">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
-router.get("/current/:lat/:lon", (req, res) => {
-
-    const lat = req.params.lat;
-    const lon = req.params.lon;
-    // console.log(value)
-        // for info on use of tilde (`) making a String literal, see below. 
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-    // let url = `https://api.weatherbit.io/v2.0/current?postal_code=${value}&key=${API_KEY}&include=minutely`
-
-    let url = `https://api.weatherbit.io/v2.0/current?lat=${lat}&lon=${lon}&key=${API_KEY}&include=minutely`
-
-    // let url = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${value}&key=${API_KEY}&days=10`
-    //When this web service gets a request, make a request to the Weather Web service
-    request(url, function (error, response, body) {
-        if (error) {
-            res.send(error)
-        } else {
-            var n = body.indexOf("{")
-            var nakidBody = body.substring(n - 1)
-            res.send(nakidBody)
-        }
-    })
-})
-
-/**
- * @api {get} /weather/hourly/:lat/:lon Get the hourly weather
- * @apiName GetWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} lat and lon
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/forcecast/daily.
- * See the <a href="https://api.weatherbit.io/v2.0/forcecast/daily">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
-router.get("/hourly/:lat/:lon", (req, res) => {
-
-    const lat = req.params.lat;
-    const lon = req.params.lon;
-    // console.log(value)
-        // for info on use of tilde (`) making a String literal, see below. 
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-    // let url = `https://api.weatherbit.io/v2.0/current?postal_code=${value}&key=${API_KEY}&include=minutely`
-
-    let url = `https://api.weatherbit.io/v2.0/forecast/hourly?lat=${lat}&lon=${lon}&key=${API_KEY}&hours=24`
-
-    // let url = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${value}&key=${API_KEY}&days=10`
-    //When this web service gets a request, make a request to the Weather Web service
-    request(url, function (error, response, body) {
-        if (error) {
-            res.send(error)
-        } else {
-            var n = body.indexOf("{")
-            var nakidBody = body.substring(n - 1)
-            res.send(nakidBody)
-        }
-    })
-})
-
-
-/**
- * @api {get} /weather/tendays/:lat/:lon Get the ten days weather
- * @apiName GetWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} lat and lon
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/forcecast/daily.
- * See the <a href="https://api.weatherbit.io/v2.0/forcecast/daily">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
-router.get("/tendays/:lat/:lon", (req, res) => {
-
-    const lat = req.params.lat;
-    const lon = req.params.lon;
-    // console.log(value)
-        // for info on use of tilde (`) making a String literal, see below. 
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-    // let url = `https://api.weatherbit.io/v2.0/current?postal_code=${value}&key=${API_KEY}&include=minutely`
-
-    let url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${API_KEY}&days=10`
-
-    // let url = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${value}&key=${API_KEY}&days=10`
-    //When this web service gets a request, make a request to the Weather Web service
-    request(url, function (error, response, body) {
-        if (error) {
-            res.send(error)
-        } else {
-            var n = body.indexOf("{")
-            var nakidBody = body.substring(n - 1)
-            res.send(nakidBody)
-        }
-    })
-})
-
-/**
- * @api {post} /weather/current Request the current weather based on zipcode
- * @apiName PostWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} zipcode
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/current.
- * See the <a href="https://www.weatherbit.io/api/weather-current">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
- router.post("/current", (req, res) => {
-    const zipcode = req.body.zipcode
-    if (isStringProvided(zipcode)) {
-        let url = `https://api.weatherbit.io/v2.0/current?postal_code=${zipcode}&key=${API_KEY}&include=minutely`
-        //When this web service gets a request, make a request to the Weather Web service
-        request(url, function (error, response, body) {
+ router.get("/", (req, res) => {
+    res.type("application/json");
+    if (req.query.zipcode) {
+        zipcode = req.query.zipcode;
+        let googleUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${zipcode}&key=${API_GOOGLE}`
+        // let googleUrl ="https://maps.googleapis.com/maps/api/geocode/json?address=" + zipcode + "&key=" + API_GOOGLE;
+        request(googleUrl, function(error, response, body) {
             if (error) {
-                res.send(error)
+                res.send(error);
             } else {
-                var n = body.indexOf("{")
-                var nakidBody = body.substring(n - 1)
+                let googleGeo = JSON.parse(body);
+                let lat = googleGeo.results[0].geometry.location.lat;
+                let lon = googleGeo.results[0].geometry.location.lng;
+                let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${API_OPEN}`
+                request(url, function (error, response, body) {
+                    if (error) {
+                        res.send(error)
+                    } else {
+                        var n = body.indexOf("{")
+                        var nakidBody = body.substring(n - 1)
 
-                res.send(nakidBody)
+                        res.send(nakidBody)
+                    }
+                })
             }
         })
-    } else {
-        res.status(400).send({
-            message: "Missing required information"
-        })
-    }
-})
+    } else if (req.query.lat && req.query.lon) {
 
-/**
- * @api {post} /weather/hourly Request the hourly weather based on zipcode
- * @apiName PostWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} zipcode
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/current.
- * See the <a href="https://www.weatherbit.io/api/weather-current">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
- router.post("/hourly", (req, res) => {
-    const zipcode = req.body.zipcode
-    if (isStringProvided(zipcode)) {
-        let url = `https://api.weatherbit.io/v2.0/forecast/hourly?postal_code=${zipcode}&key=${API_KEY}&hours=24`
-        //When this web service gets a request, make a request to the Weather Web service
-        request(url, function (error, response, body) {
+        let lat = req.query.lat;
+        let lon = req.query.lon;
+        let latlng = lat + "," + lon;
+        let googleUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latlng}&key=${API_GOOGLE}`
+
+        request(googleUrl, function (error, response, body) {
             if (error) {
-                res.send(error)
+                res.send(error);
             } else {
-                var n = body.indexOf("{")
-                var nakidBody = body.substring(n - 1)
+                let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${API_OPEN}`
 
-                res.send(nakidBody)
+                request(url, function (error, response, body) {
+                    if (error) {
+                        res.send(error)
+                    } else {
+
+                        var n = body.indexOf("{")
+                        var nakidBody = body.substring(n - 1)
+
+                        res.send(nakidBody)
+                    }
+                })
             }
-        })
-    } else {
-        res.status(400).send({
-            message: "Missing required information"
-        })
-    }
-})
-
-/**
- * @api {get} /weather/tendays Get the ten days weather
- * @apiName GetWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} zipcode
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/forcecast/daily.
- * See the <a href="https://api.weatherbit.io/v2.0/forcecast/daily">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
-
-/**
- * @api {post} /weather/tendays Request the ten days weather based on zipcode
- * @apiName PostWeather
- * @apiGroup Weather
- * 
- * @apiHeader {String} zipcode
- * 
- * @apiDescription This end point is a pass through to the weatherbit.io. 
- * All parameters will pass on to https://api.weatherbit.io/v2.0/forcecast/daily.
- * See the <a href="https://api.weatherbit.io/v2.0/forcecast/daily">weatherbit.io documentation</a>
- * for a list of optional paramerters and expected results.
- */ 
- router.post("/tendays", (req, res) => {
-    const zipcode = req.body.zipcode
-    if (isStringProvided(zipcode)) {
-        let url = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${zipcode}&key=${API_KEY}&days=10`
-        //When this web service gets a request, make a request to the Weather Web service
-        request(url, function (error, response, body) {
-            if (error) {
-                res.send(error)
-            } else {
-                var n = body.indexOf("{")
-                var nakidBody = body.substring(n - 1)
-
-                res.send(nakidBody)
-            }
-        })
-    } else {
-        res.status(400).send({
-            message: "Missing required information"
         })
     }
 })
