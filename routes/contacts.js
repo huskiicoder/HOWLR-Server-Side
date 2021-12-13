@@ -129,6 +129,7 @@ const contact_functions = require('../utilities/exports').contact
                 ON Push_Token.memberid = Contacts.memberid_b
                 WHERE Contacts.memberid_a=$1 and Contacts.memberid_b=$2`
     let values = [request.body.usernameA, request.body.usernameB]
+
     pool.query(query, values)
         .then(result => {
             console.log(response.message)

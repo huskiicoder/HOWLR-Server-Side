@@ -12,17 +12,7 @@ const generateSalt = require('../utilities').generateSalt
 
 const bodyParser = require('body-parser');
 
-// var bodyParser = require('body-parser')
-// app.use( bodyParser.json() );       // to support JSON-encoded bodies
-// app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-//   extended: true
-// })); 
-
-// app.use(express.json());       // to support JSON-encoded bodies
-// app.use(express.urlencoded()); // to support URL-encoded bodies
-
 const router = express.Router()
-// parse application/x-www-form-urlencoded
 router.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
@@ -30,17 +20,14 @@ router.use(bodyParser.json())
 
 
 /**
- * @api {get} /confirm?token Verify an email address for use
- * @apiName GetConfirm
- * @apiGroup Confirm
+ * @api {get} /reset?email Send an email to the user who requested a password reset
+ * @apiName GetReset
+ * @apiGroup Reset
  * 
- * @apiParam {String} token Token used to verify a user's email 
+ * @apiParam {String} email Email that needs password reset
  * 
  * @apiSuccess {boolean} success true when the name is found and the confirm token matches
  * @apiSuccess {String} message "Success!""
- * 
- * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
- * 
  */ 
 router.post('/', (request, response) => {
     // I need to update resetCode, put that reset code in a link inside of an email
@@ -54,6 +41,16 @@ router.post('/', (request, response) => {
     })
 })
 
+/**
+ * @api {get} /interface?token&email Send an email to the user who requested a password reset
+ * @apiName GetResetInterface
+ * @apiGroup Reset
+ * 
+ * @apiParam {String} token Token used to ensure the correct user is accessing the reset
+ * @apiParam {String} email Email that needs password reset
+ * 
+ * @apiSuccess {String} interface Webpage interface to reset password
+ */ 
 router.get('/interface', (request, response) => {
     // need to make a form to reset password and a button that will
     // submit the change and redirect to a success page
@@ -65,27 +62,9 @@ router.get('/interface', (request, response) => {
         console.log(token)
         console.log(email)
         //  have person fill out form with new password
-        // let verificationQuery = "UPDATE MEMBERS SET verification = 1 WHERE resetCode = $1"
         let verificationQuery = "UPDATE MEMBERS SET resetCode='' WHERE resetCode = $1"
         pool.query(verificationQuery, token)
             .then(result => {
-            //     console.log("here")
-            //     next()
-            //     // if (false) {
-            //     //     response.status(404).send({
-            //     //         message: "ACCESS DENIED PUNK"
-            //     //     })
-            //     // } else {
-            //     //     next()
-            //     // }
-            // }).catch(error => {
-            //     response.status(400).send({
-            //         message: "SQL Error",
-            //         error: error
-            //     })
-            // })
-        // }, (request, response) => {
-
                 var html =
                 `
                 <head>
@@ -255,7 +234,18 @@ router.get('/interface', (request, response) => {
     })
 })
 
-
+/**
+ * @api {post} /performReset Updates users password in database
+ * @apiName PostResetPerformReset
+ * @apiGroup Reset
+ * 
+ * @apiParam {String} password The new password that needs to be updated for the user
+ * @apiParam {String} email Email whose password is being reset
+ * 
+ * @apiSuccess {html} success Webpage to tell the user the reset succeeded
+ * 
+ * @apiError (400: Missing required information) {String} message the reported missing information
+ */ 
 router.post('/performReset', (request, response) => {
     const password = request.body.psw
     const email = request.body.email
@@ -264,22 +254,12 @@ router.post('/performReset', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(password)) {
-        //We're storing salted hashes to make our application more secure
-        //If you're interested as to what that is, and why we should use it
-        //watch this youtube video: https://www.youtube.com/watch?v=8ZtInClXe1Q
         let salt = generateSalt(32)
         let salted_hash = generateHash(password, salt)
-        
-        //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
-        //If you want to read more: https://stackoverflow.com/a/8265319
         let theQuery = "UPDATE MEMBERS SET Password=$1, Salt=$2 WHERE email = $3"
         let values = [salted_hash, salt, email]
         pool.query(theQuery, values)
             .then(result => {
-                // //We successfully added the user!
-                // response.status(201).send({
-                //     success: true
-                // })
                 var html =
                 `<head>
                     <meta charset="utf-8">
@@ -293,7 +273,7 @@ router.post('/performReset', (request, response) => {
                                           background-size: cover;}
                  </style>
                 <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://cdn.discordapp.com/attachments/369671073240711168/909963950509150228/howlrLogo.png" width="307" height="309" /></p>
-                <h1 style="text-align: center;">Thank you for verifying your email!</h1>
+                <h1 style="text-align: center;">Password has successfully been reset!</h1>
                 <div class="col-md-12 text-center">
                     <a href="http://howlr-server-side.herokuapp.com"><button type="button" class="btn btn-primary btn-lg">Continue to HOWLR</button></a>
                 </div>
@@ -304,21 +284,10 @@ router.post('/performReset', (request, response) => {
             })
             .catch((error) => {
                 //log the error
-                // console.log(error)
                 if (error.constraint == "members_username_key") {
                     response.status(400).send({
                         message: "Username exists"
                     })
-                } else if (error.constraint == "members_email_key") {
-                    // response.status(400).send({
-                        // message: "Email exists"
-                    // })
-                } else {
-                    console.log('register')
-                    // response.status(400).send({
-                        // message: "other error, see detail",
-                        // detail: error.detail
-                    // })
                 }
             })
     } else {
