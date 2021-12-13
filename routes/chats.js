@@ -385,7 +385,7 @@ router.delete("/:chatId/:email", (request, response, next) => {
 
 /**
  * @api {post} /chats/create Create a chat
- * @apiName PostChats
+ * @apiName PostCreatChats
  * @apiGroup Chats
  * 
  * @apiHeader {String} authorization Valid JSON Web Token JWT

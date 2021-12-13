@@ -275,7 +275,7 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
 
 /**
  * @api {post} /messages/create Create chat messages 
- * @apiName PostMessages
+ * @apiName PostCreateMessages
  * @apiGroup Messages
  * 
  * @apiParam {String} name name of the chat
@@ -343,7 +343,7 @@ router.post("/create", (request, response, next) => {
 
 /**
  * @api {post} /messages/add Add friend to the chat room 
- * @apiName PostMessages
+ * @apiName PostAddMessages
  * @apiGroup Messages
  * 
  * @apiParam {Number} chatId Id of the chat room
