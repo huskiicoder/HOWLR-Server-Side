@@ -751,7 +751,8 @@ router.put("/accept/:username/:memberId", (request, response, next) => {
         .then(result => {
             if (result.rowCount > 0) { 
                 response.send({
-                   chatID: result.rows[0].chatid
+                    success: true,
+                    rows: result.rows[0]
                 })
             } else {
                 next()
