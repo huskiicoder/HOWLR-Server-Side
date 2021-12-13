@@ -91,8 +91,9 @@ router.get('/', (request, response, next) => {
             }
             // ENDS HERE, I'M PRETTY SURE THIS PART SHOULD WORK
 
+            let memberid = result.rows[0].memberid
 
-
+            console.log(memberid)
             //Retrieve the salt used to create the salted-hash provided from the DB
             let salt = result.rows[0].salt
             
@@ -108,7 +109,7 @@ router.get('/', (request, response, next) => {
                 let token = jwt.sign(
                     {
                         "email": request.auth.email,
-                        "memberid": result.rows[0].memberid
+                        "memberid": memberid
                     },
                     config.secret,
                     { 
