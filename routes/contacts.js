@@ -128,7 +128,7 @@ const contact_functions = require('../utilities/exports').contact
                     INNER JOIN Contacts ON
                     Push_Token.memberid=Contacts.memberid_b
                     WHERE Contacts.memberid_b=$1`
-    let values = [request.body.usernameA]
+    let values = [request.body.usernameB]
     pool.query(query, values)
         .then(result => {
             result.rows.forEach(entry => 
