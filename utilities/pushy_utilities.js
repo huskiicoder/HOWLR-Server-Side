@@ -34,9 +34,8 @@ function sendContactToIndividual(token, message) {
     //build the message for Pushy to send
     var data = {
         "type": "contact",
-        "username": message
+        "sender": message
     }
-
 
     // Send push notification via the Send Notifications API 
     // https://pushy.me/docs/api/send-notifications 

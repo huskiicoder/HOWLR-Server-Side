@@ -273,6 +273,24 @@ router.get("/:chatId?/:messageId?", (request, response, next) => {
             })
 });
 
+/**
+ * @api {post} /messages/create Create chat messages 
+ * @apiName PostMessages
+ * @apiGroup Messages
+ * 
+ * @apiParam {String} name name of the chat
+ * @apiParam {List} list List of memberid in the chat
+ * 
+ * @apiSuccess (Success 201) {boolean} success true when the name is inserted
+ * @apiSuccess {Number} Chatid Id of the chat
+ * 
+ * @apiError (404: Memberid Not Found) {String} message "Member ID Not Found"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
 router.post("/create", (request, response, next) => {
     if (!isStringProvided(request.body.name) || !request.body.list) {
         response.status(400).send({
@@ -323,6 +341,23 @@ router.post("/create", (request, response, next) => {
         })
 })
 
+/**
+ * @api {post} /messages/add Add friend to the chat room 
+ * @apiName PostMessages
+ * @apiGroup Messages
+ * 
+ * @apiParam {Number} chatId Id of the chat room
+ * @apiParam {List} list List of memberid in the chat
+ * 
+ * @apiSuccess (Success 201) {boolean} success true when the name is inserted
+ * 
+ * @apiError (404: Chat ID Not Found) {String} message "Chat ID Not Found"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
 router.post("/add", (request, response, next) => {
     if (!request.body.chatId || !request.body.list) {
         response.status(400).send({

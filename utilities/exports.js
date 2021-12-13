@@ -12,10 +12,10 @@ const sendEmail = require('./email.js').sendEmail
 
 let messaging = require('./pushy_utilities.js')
 
-let contact = require('./pushy_utilities.js').sendContactToIndividual
+let contact = require('./pushy_utilities.js')
 
 const getPostalUrl = require('./location.js').getPostalUrl
 
 module.exports = { 
-    pool, generateHash, generateSalt, validation, sendEmail, messaging, getPostalUrl
+    pool, generateHash, generateSalt, validation, sendEmail, messaging, getPostalUrl, contact
 }

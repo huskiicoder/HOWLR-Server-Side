@@ -37,7 +37,7 @@ const contact_functions = require('../utilities/exports').contact
     }
 }, (request, response, next) => {
     //validate email exists AND convert it to the associated memberId
-    let query = 'SELECT MemberID FROM MEMBERS WHERE username=$1'
+    let query = 'SELECT memberid, firstname, lastname, username FROM MEMBERS WHERE username=$1'
     let values = [request.body.usernameA]
 
     pool.query(query, values)
@@ -47,9 +47,8 @@ const contact_functions = require('../utilities/exports').contact
                     message: "email not found"
                 })
             } else {
+                response.message = result.rows[0];
                 request.body.usernameA = result.rows[0].memberid;
-                response.message = request.decoded.username;
-                response.receiver = result.rows[0].memberid;
                 next()
             }
         }).catch(error => {
@@ -110,9 +109,10 @@ const contact_functions = require('../utilities/exports').contact
         .then(result => {
             if (result.rowCount == 1) {
                 next();
+                response.locals=result.rows[0]
             } else {
-                response.status(201).send({
-                    success: true
+                response.status(400).send({
+                    "message": "unknown error"
                 })
             }
         })
@@ -123,25 +123,23 @@ const contact_functions = require('../utilities/exports').contact
             })    
         })
 }, (request, response) => {
-    // send a notification of this contact to ALL members with registered tokens
+    // send a notification of this friend request to the receiver.
     let query = `SELECT token FROM Push_Token
-                    INNER JOIN Contacts ON
-                    Push_Token.memberid=Contacts.memberid_b
-                    WHERE Contacts.memberid_b=$1`
-    let values = [request.body.usernameA]
+                INNER JOIN Contacts
+                ON Push_Token.memberid = Contacts.memberid_b
+                WHERE Contacts.memberid_a=$1 and Contacts.memberid_b=$2`
+    let values = [request.body.usernameA, request.body.usernameB]
     pool.query(query, values)
         .then(result => {
-            result.rows.forEach(entry => 
-                contact_functions.sendContactToIndividual(
-                    entry.token, 
-                    response.message))
-            let receiver = response.receiver
+            console.log(response.message)
+            contact_functions.sendContactToIndividual(
+                result.rows[0].token,
+                response.message)
+
             response.send({
-                success:true,
-                message: receiver
+                success:true
             })
         }).catch(err => {
-
             response.status(400).send({
                 message: "SQL Error on select from push token",
                 error: err
@@ -161,6 +159,7 @@ const contact_functions = require('../utilities/exports').contact
  * 
  * @apiSuccess {Number} rowCount the number of contacts returned
  * @apiSuccess {Object[]} contacts List of contacts in the a contact list
+ * @apiSuccess {Object[]} invitation List of contacts in the a invitation list
  * 
  * @apiError (404: Contact Id Not Found) {String} message "Email Not Found"
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
@@ -668,6 +667,138 @@ router.put("/accept/:username/:memberId", (request, response, next) => {
                 query: request.params.memberId,
                 error: err
             })
+        })
+})
+
+/**
+ * @api {post} /contacts/messages
+ * @apiName PostContacts
+ * @apiGroup Contacts
+ * 
+ * @apiParam {String} memberid A
+ * @apiParam {String} memberid B
+ * @apiParam {String} name Name of the chat
+ * 
+ * @apiSuccess (Success 201) {boolean} success true when the member id is inserted
+ * @apiSuccess {Number} rowCount the number of contacts returned
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (404: Memberid Not Found) {String} message "Member Not Found"
+ * @apiError (404: Memberid Not Found) {String} message "Member Not Found"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
+ router.post("/messages", (request, response, next) => {
+    if (!request.body.memberidA && !request.body.memberidB && !isStringProvided(request.body.name)) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (request, response, next) => {
+    //validate memberid exists
+    let query = 'SELECT * FROM MEMBERS WHERE memberid=$1'
+    let values = [request.body.memberidA]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Member not found"
+                })
+            } else {
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "Validate memberid SQL Error",
+                error: error
+            })
+        })
+},(request, response, next) => {
+    //validate memberid exists
+    let query = 'SELECT * FROM MEMBERS WHERE memberid=$1'
+    let values = [request.body.memberidB]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Member not found"
+                })
+            } else {
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "Validate memberid SQL Error",
+                error: error
+            })
+        })
+}, (request, response, next) => {
+    //validate if chat exits
+    let query = `Select A.chatid as chatid from chatmembers 
+                Join (Select chatid, count(*) as total from chatmembers 
+                Where chatid in (Select chatid from chatmembers where memberid=$1) group by chatid) As A
+                ON chatmembers.chatid=A.chatid Where A.total = 2 and Chatmembers.memberid=$2`
+    let values = [request.body.memberidA, request.body.memberidB]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount > 0) { 
+                response.send({
+                   chatID: result.rows[0].chatid
+                })
+            } else {
+                next()
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "Valid chat: SQL Error",
+                error: error
+            })
+        })
+
+}, (request, response, next) => {
+
+    let insert = `INSERT INTO Chats(Name)
+                  VALUES ($1)
+                  RETURNING ChatId`
+    let values = [request.body.name]
+    pool.query(insert, values)
+        .then(result => {
+            request.body.name = result.rows[0].chatid
+            console.log(result.rows[0])
+            next()
+        }).catch(err => {
+            response.status(400).send({
+                message: "Insert SQL Error",
+                error: err
+            })
+
+        })
+}, (request, response) => {
+    let chatID = request.body.name
+    let query = 'INSERT INTO ChatMembers(chatID, MemberID) Values';
+    query += '(' + chatID + ',' + request.body.memberidA + '),';
+    query += '(' + chatID + ',' + request.body.memberidB + ') RETURNING *';
+    console.log(query);
+    let values = null;
+    pool.query(query,values)
+        .then(result => {
+            response.send({
+                success: true,
+                rows: result.rows[0]
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "Insert chatmembers SQL Error",
+                error: err
+            })
+
         })
 })
 

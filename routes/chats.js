@@ -382,6 +382,28 @@ router.delete("/:chatId/:email", (request, response, next) => {
     }
 )
 
+
+/**
+ * @api {post} /chats/create Create a chat
+ * @apiName PostChats
+ * @apiGroup Chats
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @apiParam {String} name the name for the chat
+ * 
+ * @apiParam {String} name name of the chat
+ * @apiParam {List} list List of memberid in the chat
+ * 
+ * @apiSuccess (Success 201) {boolean} success true when the name is inserted
+ * @apiSuccess {Number} Chatid Id of the chat
+ * 
+ * @apiError (404: Memberid Not Found) {String} message "Member ID Not Found"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
 router.post("/create", (request, response, next) => {
     if (!isStringProvided(request.body.name) || !request.body.list) {
         response.status(400).send({
