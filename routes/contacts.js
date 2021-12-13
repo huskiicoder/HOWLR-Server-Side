@@ -746,13 +746,12 @@ router.put("/accept/:username/:memberId", (request, response, next) => {
                 Where chatid in (Select chatid from chatmembers where memberid=$1) group by chatid) As A
                 ON chatmembers.chatid=A.chatid Where A.total = 2 and Chatmembers.memberid=$2`
     let values = [request.body.memberidA, request.body.memberidB]
-
     pool.query(query, values)
         .then(result => {
             if (result.rowCount > 0) { 
                 response.send({
-                    success: true,
-                    rows: result.rows[0]
+                   success: true,
+                   chatID:result.rows[0].chatid
                 })
             } else {
                 next()
@@ -773,7 +772,6 @@ router.put("/accept/:username/:memberId", (request, response, next) => {
     pool.query(insert, values)
         .then(result => {
             request.body.name = result.rows[0].chatid
-            console.log(result.rows[0])
             next()
         }).catch(err => {
             response.status(400).send({
@@ -793,7 +791,7 @@ router.put("/accept/:username/:memberId", (request, response, next) => {
         .then(result => {
             response.send({
                 success: true,
-                rows: result.rows[0]
+                chatID:result.rows[0].chatid
             })
         }).catch(err => {
             response.status(400).send({
