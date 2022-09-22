@@ -42,4 +42,4 @@
 
 Available on Google Play Store soon
 
-### VIEW THE <a href="https://github.com/huskiicoder/HOWLR-Client-Side">CLIENT SIDE</a>
+### VIEW THE <a href="https://github.com/huskiicoder/HOWLR-Client-Side/blob/master/README.md">CLIENT SIDE</a>
